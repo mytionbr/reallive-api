@@ -1,0 +1,47 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+input CreateUserInput {
+  email: String!
+  nickname: String!
+  password: String!
+}
+
+input FindUserFilter {
+  id: String
+  nickname: String
+}
+
+input LoginUserInput {
+  nickname: String!
+  password: String!
+}
+
+type LoginUserOutput {
+  token: String!
+}
+
+type Mutation {
+  createUser(data: CreateUserInput!): User!
+  login(data: LoginUserInput!): LoginUserOutput!
+  register(data: RegisterUserInput!): Boolean!
+}
+
+type Query {
+  findAll: [User!]!
+  findOne(findUserFilter: FindUserFilter!): User!
+}
+
+input RegisterUserInput {
+  email: String!
+  nickname: String!
+  password: String!
+}
+
+type User {
+  email: String!
+  id: ID!
+  nickname: String!
+  password: String!
+}
