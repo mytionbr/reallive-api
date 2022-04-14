@@ -3,9 +3,12 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { v4 as  uuidv4 } from 'uuid'
+
 import { USERS } from '../mocks/user.mock';
 import { CreateUserInput } from './dto/create-user.input';
 import { User } from './user.entity';
+
 
 @Injectable()
 export class UserService {
@@ -37,7 +40,7 @@ export class UserService {
     user.nickname = data.nickname;
     user.email = data.email;
     user.password = data.password;
-    user.id = '4';
+    user.id = uuidv4();
 
     this.users.push(user);
 
