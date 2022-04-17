@@ -2,6 +2,20 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type ChatRoom {
+  createdAt: String!
+  id: ID!
+  img: String
+  title: String!
+  updatedAt: String!
+  usersId: [String!]!
+}
+
+input CreateChatRoomInput {
+  title: String!
+  usersId: [String!]!
+}
+
 input CreateUserInput {
   email: String!
   nickname: String!
@@ -23,6 +37,7 @@ type LoginUserOutput {
 }
 
 type Mutation {
+  createChatRoom(data: CreateChatRoomInput!): ChatRoom!
   createUser(data: CreateUserInput!): User!
   login(data: LoginUserInput!): LoginUserOutput!
   register(data: RegisterUserInput!): Boolean!
@@ -43,5 +58,4 @@ type User {
   email: String!
   id: ID!
   nickname: String!
-  password: String!
 }

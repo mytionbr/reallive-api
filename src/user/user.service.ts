@@ -3,15 +3,19 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { v4 as  uuidv4 } from 'uuid'
+import { InjectModel, Model } from 'nestjs-dynamoose';
+import { v4 as uuidv4 } from 'uuid';
 
 import { USERS } from '../mocks/user.mock';
 import { CreateUserInput } from './dto/create-user.input';
-import { User } from './user.entity';
-
+import { User, UserKey } from './model/user.entity';
 
 @Injectable()
 export class UserService {
+  constructor(
+    @InjectModel('user') private readonly userModel: Model<User, UserKey>,
+  ) {}
+
   users: User[] = USERS;
 
   findAllUsers(): User[] {
@@ -39,12 +43,18 @@ export class UserService {
     const user = new User();
     user.nickname = data.nickname;
     user.email = data.email;
-    user.password = data.password;
     user.id = uuidv4();
 
     this.users.push(user);
 
     return user;
+  }
+
+  async saveUser(user: User) {
+    return await this.userModel.create({
+      ...user,
+      id: uuidv4(),
+    });
   }
 
   private throwErrorIfUserNotFound(user: User) {
