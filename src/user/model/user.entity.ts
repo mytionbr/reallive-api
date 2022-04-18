@@ -1,9 +1,5 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 
-export type UserKey = {
-  id: string;
-};
-
 @ObjectType()
 export class User {
   constructor(id?: string) {

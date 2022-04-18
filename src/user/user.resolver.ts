@@ -17,12 +17,11 @@ export class UserResolver {
   }
 
   @Query(() => User)
-  findOne(
+  async findOne(
     @Args('findUserFilter', { type: () => FindUserFilter })
     findUserFilter: FindUserFilter,
-  ): User {
-    const { id, nickname } = findUserFilter;
-    return this.userService.findOne(id, nickname);
+  ): Promise<User> {
+    return await this.userService.findOne(findUserFilter);
   }
 
   @UseGuards(GqlAuthGuard)

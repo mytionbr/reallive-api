@@ -1,85 +1,76 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import {
-  AuthenticationDetails,
-  CognitoUser,
-  CognitoUserAttribute,
-  CognitoUserPool,
-  CognitoUserSession,
-} from 'amazon-cognito-identity-js';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { CognitoUserPool } from 'amazon-cognito-identity-js';
+import { UserToRegister, UserToSave } from 'src/user/dto/IUser';
 import { User } from 'src/user/model/user.entity';
 import { UserService } from 'src/user/user.service';
-import { AuthConfig } from './auth-config';
+import { CognitoService } from './cognito.service';
+import { LoginUserInput } from './dto/login-user.input';
+import { LoginUserOutput } from './dto/login-user.output';
 import { RegisterUserInput } from './dto/register-user.input';
 
 @Injectable()
 export class AuthService {
   private userPool: CognitoUserPool;
   constructor(
-    private authConfig: AuthConfig,
     private userService: UserService,
-  ) {
-    this.userPool = new CognitoUserPool({
-      UserPoolId: authConfig.userPoolId,
-      ClientId: authConfig.clientId,
-    });
-  }
-  authenticateUser(user: {
-    name: string;
-    password: string;
-  }): Promise<CognitoUserSession> {
-    const { name, password } = user;
+    private cognitoService: CognitoService,
+  ) {}
 
-    const authenticationDetails = new AuthenticationDetails({
-      Username: name,
-      Password: password,
-    });
+  async authenticateUser(data: LoginUserInput): Promise<LoginUserOutput> {
+    try {
+      const userInDB = await this.userService.findOne({ email: data.email });
 
-    const userData = {
-      Username: name,
-      Pool: this.userPool,
-    };
+      if (userInDB) {
+        const userToAuth = {
+          id: userInDB.id,
+          password: data.password,
+        };
 
-    const newUser = new CognitoUser(userData);
+        const authUser = await this.cognitoService.authenticateUser(userToAuth);
 
-    return new Promise((resolve, reject) => {
-      return newUser.authenticateUser(authenticationDetails, {
-        onSuccess: (result) => {
-          resolve(result);
-        },
-        onFailure: (err) => {
-          reject(err);
-        },
-      });
-    });
+        if (authUser) {
+          const loginUserOutput: LoginUserOutput = {
+            token: authUser.getIdToken().getJwtToken(),
+          };
+
+          return loginUserOutput;
+        }
+      }
+
+      throw new Error('algo deu errado, tente novamente mais tarde');
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
-  async registerUser(
-    registerUserInput: RegisterUserInput,
-  ): Promise<CognitoUser> {
+  async registerUser(registerUserInput: RegisterUserInput): Promise<User> {
     const { email, password, nickname } = registerUserInput;
-    return new Promise((resolve, reject) => {
-      return this.userPool.signUp(
+
+    try {
+      const userToSave: UserToSave = {
+        email,
         nickname,
+      };
+
+      const savedUser = await this.userService.saveUser(userToSave);
+
+      const userToRegister: UserToRegister = {
+        id: savedUser.id,
+        email: savedUser.email,
         password,
-        [new CognitoUserAttribute({ Name: 'email', Value: email })],
-        null,
-        async (error, result) => {
-          if (!result) {
-            reject(error);
-          } else {
-            const user = new User();
-            user.nickname = nickname;
-            user.email = email;
-            const savedUser = await this.userService.saveUser(user);
-            if (savedUser) {
-              resolve(result.user);
-            } else {
-              const error = new Error('Algo deu errado');
-              reject(error);
-            }
-          }
-        },
+      };
+
+      const registedUser = await this.cognitoService.registerUser(
+        userToRegister,
       );
-    });
+
+      if (registedUser) {
+        return savedUser;
+      }
+
+      throw new Error('Error ao registrar o usuário');
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 }

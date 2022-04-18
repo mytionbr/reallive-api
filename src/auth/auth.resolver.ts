@@ -11,15 +11,10 @@ export class AuthResolver {
 
   @Mutation(() => Boolean)
   async register(@Args('data') data: RegisterUserInput) {
-    try {
-      const result = await this.authService.registerUser(data);
+    const result = await this.authService.registerUser(data);
 
-      if (result) {
-        return true;
-      }
-      throw new Error('algo deu errado, tente novamente mais tarde');
-    } catch (error) {
-      throw new BadRequestException(error.message);
+    if (result) {
+      return true;
     }
   }
 
@@ -29,19 +24,9 @@ export class AuthResolver {
     data: LoginUserInput,
   ) {
     try {
-      const user = {
-        name: data.nickname,
-        password: data.password,
-      };
-      const result = await this.authService.authenticateUser(user);
-      if (result) {
-        const loginUserOutput: LoginUserOutput = {
-          token: result.getIdToken().getJwtToken(),
-        };
+      const result = await this.authService.authenticateUser(data);
 
-        return loginUserOutput;
-      }
-      throw new Error('algo deu errado, tente novamente mais tarde');
+      return result;
     } catch (error) {
       throw new BadRequestException(error.message);
     }

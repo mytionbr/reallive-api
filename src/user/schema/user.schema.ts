@@ -1,5 +1,10 @@
 import { Schema } from 'dynamoose';
 
+export type UserKey = {
+  id?: string;
+  email?: string;
+};
+
 export const UserSchema = new Schema(
   {
     id: {
@@ -11,6 +16,7 @@ export const UserSchema = new Schema(
     },
     email: {
       type: String,
+      rangeKey: true,
     },
   },
   {

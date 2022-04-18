@@ -29,12 +29,13 @@ input CreateUserInput {
 }
 
 input FindUserFilter {
+  email: String
   id: String
   nickname: String
 }
 
 input LoginUserInput {
-  nickname: String!
+  email: String!
   password: String!
 }
 

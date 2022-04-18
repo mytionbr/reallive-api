@@ -1,14 +1,18 @@
 import {
   BadRequestException,
+  ConsoleLogger,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Condition } from 'dynamoose';
 import { InjectModel, Model } from 'nestjs-dynamoose';
 import { v4 as uuidv4 } from 'uuid';
 
 import { USERS } from '../mocks/user.mock';
 import { CreateUserInput } from './dto/create-user.input';
-import { User, UserKey } from './model/user.entity';
+import { UserToSave } from './dto/IUser';
+import { User } from './model/user.entity';
+import { UserKey } from './schema/user.schema';
 
 @Injectable()
 export class UserService {
@@ -22,14 +26,27 @@ export class UserService {
     return this.users;
   }
 
-  findOne(id?: string, nickname?: string): User {
-    if (id) {
-      const user = this.users.find((user) => user.id === id);
+  async findOne(userData: {
+    id?: string;
+    nickname?: string;
+    email?: string;
+  }): Promise<User> {
+    if (userData?.id) {
+      const user = await this.userModel.get({ id: userData.id });
       this.throwErrorIfUserNotFound(user);
       return user;
     }
-    if (nickname) {
-      const user = this.users.find((user) => user.nickname === nickname);
+    if (userData?.nickname) {
+      const condition = new Condition({ nickname: userData.nickname });
+      const result = await this.userModel.scan(condition).exec();
+      const user = result[0];
+      this.throwErrorIfUserNotFound(user);
+      return user;
+    }
+    if (userData?.email) {
+      const condition = new Condition({ email: userData.email });
+      const result = await this.userModel.scan(condition).exec();
+      const user = result[0];
       this.throwErrorIfUserNotFound(user);
       return user;
     }
@@ -50,9 +67,9 @@ export class UserService {
     return user;
   }
 
-  async saveUser(user: User) {
+  async saveUser(userToSave: UserToSave) {
     return await this.userModel.create({
-      ...user,
+      ...userToSave,
       id: uuidv4(),
     });
   }
