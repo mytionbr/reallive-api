@@ -16,6 +16,12 @@ input CreateChatRoomInput {
   usersId: [String!]!
 }
 
+input CreateMessageInput {
+  chatRoomId: String!
+  context: String!
+  userId: String!
+}
+
 input CreateUserInput {
   email: String!
   nickname: String!
@@ -36,8 +42,19 @@ type LoginUserOutput {
   token: String!
 }
 
+type Message {
+  chatRoomId: String!
+  context: String!
+  createdAt: String!
+  id: ID!
+  received: Boolean!
+  userId: String!
+  viewed: Boolean!
+}
+
 type Mutation {
   createChatRoom(data: CreateChatRoomInput!): ChatRoom!
+  createMessage(data: CreateMessageInput!): Message!
   createUser(data: CreateUserInput!): User!
   login(data: LoginUserInput!): LoginUserOutput!
   register(data: RegisterUserInput!): Boolean!

@@ -1,5 +1,8 @@
 import { Schema } from 'dynamoose';
-import { UserSchema } from 'src/user/schema/user.schema';
+
+export type MessageKey = {
+  id: string;
+};
 
 export const MessageSchema = new Schema(
   {
@@ -10,8 +13,19 @@ export const MessageSchema = new Schema(
     context: {
       type: String,
     },
-    user: {
-      type: UserSchema,
+    userId: {
+      type: String,
+    },
+    chatRoomId: {
+      type: String,
+    },
+    viewed: {
+      type: Boolean,
+      default: false,
+    },
+    received: {
+      type: Boolean,
+      default: false,
     },
   },
   {

@@ -1,5 +1,4 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { User } from 'src/user/model/user.entity';
 
 @ObjectType()
 export class Message {
@@ -7,12 +6,14 @@ export class Message {
   id: string;
   @Field(() => String)
   context: string;
-  @Field(() => User)
-  user: User;
   @Field(() => String)
-  createAt: string;
+  userId: string;
+  @Field(() => String)
+  chatRoomId: string;
+  @Field(() => String)
+  createdAt?: string;
   @Field(() => Boolean)
-  viewed: boolean;
+  viewed?: boolean;
   @Field(() => Boolean)
-  received: boolean;
+  received?: boolean;
 }
