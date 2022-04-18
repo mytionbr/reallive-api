@@ -7,9 +7,7 @@ import {
   CognitoUserSession,
 } from 'amazon-cognito-identity-js';
 import { UserToRegister } from 'src/user/dto/IUser';
-import { User } from 'src/user/model/user.entity';
 import { AuthConfig } from './auth-config';
-import { RegisterUserInput } from './dto/register-user.input';
 
 @Injectable()
 export class CognitoService {
@@ -33,15 +31,10 @@ export class CognitoService {
       Password: password,
     });
 
-    const userData = {
-      Username: id,
-      Pool: this.userPool,
-    };
-
-    const newUser = new CognitoUser(userData);
+    const cgUser = this.getCognitoUser(id);
 
     return new Promise((resolve, reject) => {
-      return newUser.authenticateUser(authenticationDetails, {
+      return cgUser.authenticateUser(authenticationDetails, {
         onSuccess: (result) => {
           resolve(result);
         },
@@ -69,5 +62,27 @@ export class CognitoService {
         },
       );
     });
+  }
+
+  async verifyEmail(userId: string, code: string) {
+    const cgUser = this.getCognitoUser(userId);
+
+    return new Promise((resolve, reject) => {
+      cgUser.confirmRegistration(code, true, (err, result) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(result);
+      });
+    });
+  }
+
+  private getCognitoUser(userId: string): CognitoUser {
+    const userData = {
+      Username: userId,
+      Pool: this.userPool,
+    };
+
+    return new CognitoUser(userData);
   }
 }

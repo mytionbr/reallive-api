@@ -7,6 +7,7 @@ import { CognitoService } from './cognito.service';
 import { LoginUserInput } from './dto/login-user.input';
 import { LoginUserOutput } from './dto/login-user.output';
 import { RegisterUserInput } from './dto/register-user.input';
+import { VerifyEmailInput } from './dto/verift-user.input';
 
 @Injectable()
 export class AuthService {
@@ -72,5 +73,17 @@ export class AuthService {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  async verifyEmail(data: VerifyEmailInput) {
+    const { userId, code } = data;
+
+    const result = await this.cognitoService.verifyEmail(userId, code);
+
+    if (result) {
+      return true;
+    }
+
+    throw new BadRequestException('Código invalido');
   }
 }

@@ -59,6 +59,7 @@ type Mutation {
   createUser(data: CreateUserInput!): User!
   login(data: LoginUserInput!): LoginUserOutput!
   register(data: RegisterUserInput!): Boolean!
+  verifyEmail(data: VerifyEmailInput!): Boolean!
 }
 
 type Query {
@@ -76,4 +77,9 @@ type User {
   email: String!
   id: ID!
   nickname: String!
+}
+
+input VerifyEmailInput {
+  code: String!
+  userId: String!
 }

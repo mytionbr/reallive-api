@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { LoginUserInput } from './dto/login-user.input';
 import { LoginUserOutput } from './dto/login-user.output';
 import { RegisterUserInput } from './dto/register-user.input';
+import { VerifyEmailInput } from './dto/verift-user.input';
 
 @Resolver('auth')
 export class AuthResolver {
@@ -30,5 +31,12 @@ export class AuthResolver {
     } catch (error) {
       throw new BadRequestException(error.message);
     }
+  }
+
+  @Mutation(() => Boolean)
+  async verifyEmail(@Args('data') data: VerifyEmailInput) {
+    const result = await this.authService.verifyEmail(data);
+
+    return result;
   }
 }
