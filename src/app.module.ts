@@ -17,6 +17,7 @@ import { ChatRoomModule } from './chat-room/chat-room.module';
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       sortSchema: true,
+      installSubscriptionHandlers: true,
     }),
     DynamooseModule.forRoot({
       aws: {

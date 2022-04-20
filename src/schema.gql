@@ -66,6 +66,10 @@ input RegisterUserInput {
   password: String!
 }
 
+type Subscription {
+  messageAdded(chatRoomId: String!): Message!
+}
+
 type User {
   email: String!
   id: ID!
