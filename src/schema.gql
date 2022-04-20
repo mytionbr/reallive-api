@@ -22,12 +22,6 @@ input CreateMessageInput {
   userId: String!
 }
 
-input CreateUserInput {
-  email: String!
-  nickname: String!
-  password: String!
-}
-
 input FindUserFilter {
   email: String
   id: String
@@ -56,7 +50,6 @@ type Message {
 type Mutation {
   createChatRoom(data: CreateChatRoomInput!): ChatRoom!
   createMessage(data: CreateMessageInput!): Message!
-  createUser(data: CreateUserInput!): User!
   login(data: LoginUserInput!): LoginUserOutput!
   register(data: RegisterUserInput!): Boolean!
   verifyEmail(data: VerifyEmailInput!): Boolean!

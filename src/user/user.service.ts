@@ -1,15 +1,11 @@
 import {
   BadRequestException,
-  ConsoleLogger,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { Condition } from 'dynamoose';
 import { InjectModel, Model } from 'nestjs-dynamoose';
 import { v4 as uuidv4 } from 'uuid';
-
-import { USERS } from '../mocks/user.mock';
-import { CreateUserInput } from './dto/create-user.input';
 import { UserToSave } from './dto/IUser';
 import { User } from './model/user.entity';
 import { UserKey } from './schema/user.schema';
@@ -20,10 +16,9 @@ export class UserService {
     @InjectModel('user') private readonly userModel: Model<User, UserKey>,
   ) {}
 
-  users: User[] = USERS;
-
-  findAllUsers(): User[] {
-    return this.users;
+  async findAllUsers(): Promise<User[]> {
+    const users: User[] = await this.userModel.scan().exec();
+    return users;
   }
 
   async findOne(userData: {
@@ -54,17 +49,6 @@ export class UserService {
     throw new BadRequestException(
       'Adicione algum campo para pesquisa do usuário',
     );
-  }
-
-  createUser(data: CreateUserInput): User {
-    const user = new User();
-    user.nickname = data.nickname;
-    user.email = data.email;
-    user.id = uuidv4();
-
-    this.users.push(user);
-
-    return user;
   }
 
   async saveUser(userToSave: UserToSave) {
