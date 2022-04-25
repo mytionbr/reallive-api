@@ -1,5 +1,4 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { User } from 'src/user/model/user.entity';
 
 export type ChatRoomKey = {
   id: string;

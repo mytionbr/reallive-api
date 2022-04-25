@@ -12,9 +12,11 @@ export const ChatRoomSchema = new Schema(
     },
     img: {
       type: String,
+      required: false,
     },
     title: {
       type: String,
+      required: false,
     },
   },
   {

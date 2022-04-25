@@ -9,7 +9,7 @@ import { ChatRoomSchema } from './schema/chat-room.schema';
     DynamooseModule.forFeature([
       {
         name: 'chatRoom',
-        schema: ChatRoomSchema,
+        schema: [ChatRoomSchema],
       },
     ]),
   ],
