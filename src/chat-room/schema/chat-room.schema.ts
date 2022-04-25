@@ -1,4 +1,5 @@
 import { Schema } from 'dynamoose';
+import { ChatRoomTypeEnum } from '../model/chat-room.entity';
 
 export const ChatRoomSchema = new Schema(
   {
@@ -17,6 +18,10 @@ export const ChatRoomSchema = new Schema(
     title: {
       type: String,
       required: false,
+    },
+    type: {
+      type: String,
+      enum: [...Object.values(ChatRoomTypeEnum)],
     },
   },
   {

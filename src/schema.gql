@@ -6,13 +6,15 @@ type ChatRoom {
   createdAt: String!
   id: ID!
   img: String
-  title: String!
+  title: String
+  type: type!
   updatedAt: String!
   usersId: [String!]!
 }
 
 input CreateChatRoomInput {
-  title: String!
+  title: String
+  type: type!
   usersId: [String!]!
 }
 
@@ -79,4 +81,9 @@ type User {
 input VerifyEmailInput {
   code: String!
   userId: String!
+}
+
+enum type {
+  GROUP
+  SINGLE
 }
