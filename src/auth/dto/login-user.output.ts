@@ -6,4 +6,6 @@ import { TypeKind } from 'graphql';
 export class LoginUserOutput {
   @Field()
   token!: string;
+  @Field()
+  userId!: string;
 }

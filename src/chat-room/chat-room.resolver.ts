@@ -16,7 +16,7 @@ export class ChatRoomResolver {
   }
 
   @Query(() => [ChatRoom])
-  async findByUserId(@Args('userId') userId: string) {
+  async findChatRoomByUserId(@Args('userId') userId: string) {
     const chatRoomList = await this.chatRoomService.findByUserId(userId);
     return chatRoomList;
   }

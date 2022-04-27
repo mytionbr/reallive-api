@@ -19,7 +19,6 @@ export class AuthService {
 
   async authenticateUser(data: LoginUserInput): Promise<LoginUserOutput> {
     try {
-      console.log(data);
       const userInDB = await this.userService.findOne({ email: data.email });
 
       if (userInDB) {
@@ -33,6 +32,7 @@ export class AuthService {
         if (authUser) {
           const loginUserOutput: LoginUserOutput = {
             token: authUser.getIdToken().getJwtToken(),
+            userId: userInDB.id,
           };
 
           return loginUserOutput;
