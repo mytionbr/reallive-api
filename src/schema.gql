@@ -7,7 +7,7 @@ type ChatRoom {
   id: ID!
   img: String
   title: String
-  type: type!
+  type: type
   updatedAt: String!
   usersId: [String!]!
 }
@@ -59,6 +59,7 @@ type Mutation {
 
 type Query {
   findAll: [User!]!
+  findByUserId(userId: String!): [ChatRoom!]!
   findOne(findUserFilter: FindUserFilter!): User!
 }
 
