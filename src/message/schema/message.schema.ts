@@ -18,6 +18,7 @@ export const MessageSchema = new Schema(
     },
     chatRoomId: {
       type: String,
+      rangeKey: true,
     },
     viewed: {
       type: Boolean,

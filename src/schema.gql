@@ -12,6 +12,17 @@ type ChatRoom {
   usersId: [String!]!
 }
 
+type ChatRoomMessagesOutput {
+  createdAt: String!
+  id: ID!
+  img: String
+  messages: [Message!]
+  title: String
+  type: type!
+  updatedAt: String!
+  usersId: [String!]!
+}
+
 input CreateChatRoomInput {
   title: String
   type: type!
@@ -60,7 +71,8 @@ type Mutation {
 
 type Query {
   findAll: [User!]!
-  findChatRoomByUserId(userId: String!): [ChatRoom!]!
+  findAllChatRoomsByUserId(userId: String!): [ChatRoom!]!
+  findChatRoomWithMessages(chatRoomId: String!): ChatRoomMessagesOutput!
   findOne(findUserFilter: FindUserFilter!): User!
 }
 

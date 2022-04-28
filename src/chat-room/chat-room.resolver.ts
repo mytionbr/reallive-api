@@ -1,5 +1,7 @@
 import { Args, Mutation, Resolver, Query } from '@nestjs/graphql';
+import { MessageService } from 'src/message/message.service';
 import { ChatRoomService } from './chat-room.service';
+import { ChatRoomMessagesOutput } from './dto/chat-room-messages.output';
 import { CreateChatRoomInput } from './dto/create-chat-room.input';
 import { ChatRoom } from './model/chat-room.entity';
 
@@ -16,8 +18,16 @@ export class ChatRoomResolver {
   }
 
   @Query(() => [ChatRoom])
-  async findChatRoomByUserId(@Args('userId') userId: string) {
+  async findAllChatRoomsByUserId(@Args('userId') userId: string) {
     const chatRoomList = await this.chatRoomService.findByUserId(userId);
     return chatRoomList;
+  }
+  @Query(() => ChatRoomMessagesOutput)
+  async findChatRoomWithMessages(@Args('chatRoomId') chatRoomId: string) {
+    const chatRoom = await this.chatRoomService.findChatRoomWithMessages(
+      chatRoomId,
+    );
+
+    return chatRoom;
   }
 }

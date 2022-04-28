@@ -23,5 +23,6 @@ import { PubSub } from 'graphql-subscriptions';
       useValue: new PubSub(),
     },
   ],
+  exports: [MessageService],
 })
 export class MessageModule {}
