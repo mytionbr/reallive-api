@@ -5,7 +5,7 @@ export class Message {
   @Field(() => ID)
   id: string;
   @Field(() => String)
-  context: string;
+  content: string;
   @Field(() => String)
   userId: string;
   @Field(() => String)

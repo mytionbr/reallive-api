@@ -11,6 +11,7 @@ import { Condition } from 'dynamoose';
 import { MessageService } from 'src/message/message.service';
 import { ChatRoomMessagesOutput } from './dto/chat-room-messages.output';
 import { UserService } from 'src/user/user.service';
+import { ChatRoomInfoOutput, LastMessages } from './dto/chat-room-info.output';
 
 @Injectable()
 export class ChatRoomService {
@@ -30,11 +31,16 @@ export class ChatRoomService {
     return savedChatRoom;
   }
 
-  async findByUserId(userId: string): Promise<ChatRoom[]> {
+  async findByUserId(userId: string): Promise<ChatRoomInfoOutput[]> {
     const condition = new Condition('usersId').contains(userId);
-    const result: ChatRoom[] = await this.chatRoomModel.scan(condition).exec();
-    const chatRooms = await this.parseChatTitle(result, userId);
-    return chatRooms;
+    const chatRooms: ChatRoom[] = await this.chatRoomModel
+      .scan(condition)
+      .exec();
+    const chatRoomListOutput = await this.parseChatRoomOutput(
+      chatRooms,
+      userId,
+    );
+    return chatRoomListOutput;
   }
 
   async findById(chatRoomId: string): Promise<ChatRoom> {
@@ -56,21 +62,62 @@ export class ChatRoomService {
     return chatRoomMessagesOutput;
   }
 
-  private async parseChatTitle(
+  private async parseChatRoomOutput(
     chatRooms: ChatRoom[],
-    currentUserId: string,
-  ): Promise<ChatRoom[]> {
-    const chatRoomResult = await Promise.all(
+    userId: string,
+  ): Promise<ChatRoomInfoOutput[]> {
+    const chatRoomListOutput = Promise.all(
       chatRooms.map(async (chat) => {
-        if (chat.type === ChatRoomTypeEnum.SINGLE) {
-          const otherUserId = chat.usersId.find((id) => id !== currentUserId);
-          const otherUser = await this.userService.findOne({ id: otherUserId });
-          chat.title = otherUser.nickname;
-        }
-        return chat;
+        const title = await this.addChatTitle(chat, userId);
+        const lastMessages = await this.addLastMessages(chat);
+
+        const chatRoomInfoOutput: ChatRoomInfoOutput = {
+          ...chat,
+          title,
+          lastMessages,
+        };
+        return chatRoomInfoOutput;
       }),
     );
-    console.log(chatRoomResult);
-    return chatRoomResult;
+
+    return chatRoomListOutput;
+  }
+
+  private async addChatTitle(
+    chat: ChatRoom,
+    currentUserId: string,
+  ): Promise<string> {
+    let title;
+    if (chat.type === ChatRoomTypeEnum.SINGLE) {
+      const otherUserId = chat.usersId.find((id) => id !== currentUserId);
+      const otherUser = await this.userService.findOne({ id: otherUserId });
+      title = otherUser.nickname;
+    } else {
+      title = chat.title;
+    }
+    return title;
+  }
+
+  private async addLastMessages(chat: ChatRoom) {
+    const messages = await this.messageService.findByChatRoom(chat.id);
+    const lastMessages = new LastMessages();
+    if (messages) {
+      lastMessages.count = messages.length;
+      const lastMessage = messages[0];
+      if (lastMessage) {
+        const user = await this.userService.findOne({ id: lastMessage.userId });
+        lastMessages.lastMessage = {
+          content: lastMessage.content,
+          updatedAt: lastMessage.createdAt,
+          user: {
+            nickname: user.nickname,
+          },
+        };
+        lastMessages.viewed = lastMessage.viewed;
+      } else {
+        lastMessages.viewed = true;
+      }
+    }
+    return lastMessages;
   }
 }

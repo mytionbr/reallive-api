@@ -10,7 +10,7 @@ export const MessageSchema = new Schema(
       type: String,
       hashKey: true,
     },
-    context: {
+    content: {
       type: String,
     },
     userId: {

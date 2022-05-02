@@ -12,6 +12,17 @@ type ChatRoom {
   usersId: [String!]!
 }
 
+type ChatRoomInfoOutput {
+  createdAt: String!
+  id: ID!
+  img: String
+  lastMessages: LastMessages!
+  title: String
+  type: type!
+  updatedAt: String!
+  usersId: [String!]!
+}
+
 type ChatRoomMessagesOutput {
   createdAt: String!
   id: ID!
@@ -31,7 +42,7 @@ input CreateChatRoomInput {
 
 input CreateMessageInput {
   chatRoomId: String!
-  context: String!
+  content: String!
   userId: String!
 }
 
@@ -39,6 +50,18 @@ input FindUserFilter {
   email: String
   id: String
   nickname: String
+}
+
+type LastMessage {
+  content: String!
+  updatedAt: String!
+  user: UserMessage!
+}
+
+type LastMessages {
+  count: Float!
+  lastMessage: LastMessage
+  viewed: Boolean!
 }
 
 input LoginUserInput {
@@ -53,7 +76,7 @@ type LoginUserOutput {
 
 type Message {
   chatRoomId: String!
-  context: String!
+  content: String!
   createdAt: String!
   id: ID!
   received: Boolean!
@@ -71,7 +94,7 @@ type Mutation {
 
 type Query {
   findAll: [User!]!
-  findAllChatRoomsByUserId(userId: String!): [ChatRoom!]!
+  findAllChatRoomsByUserId(userId: String!): [ChatRoomInfoOutput!]!
   findChatRoomWithMessages(chatRoomId: String!): ChatRoomMessagesOutput!
   findOne(findUserFilter: FindUserFilter!): User!
 }
@@ -89,6 +112,10 @@ type Subscription {
 type User {
   email: String!
   id: ID!
+  nickname: String!
+}
+
+type UserMessage {
   nickname: String!
 }
 
