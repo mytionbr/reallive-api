@@ -95,7 +95,7 @@ type Mutation {
 type Query {
   findAll: [User!]!
   findAllChatRoomsByUserId(userId: String!): [ChatRoomInfoOutput!]!
-  findChatRoomWithMessages(chatRoomId: String!): ChatRoomMessagesOutput!
+  findChatRoomWithMessages(chatRoomId: String!, currentUserId: String!): ChatRoomMessagesOutput!
   findOne(findUserFilter: FindUserFilter!): User!
 }
 

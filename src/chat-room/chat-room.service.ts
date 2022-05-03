@@ -50,10 +50,12 @@ export class ChatRoomService {
 
   async findChatRoomWithMessages(
     chatRoomId: string,
+    currentUserId: string,
   ): Promise<ChatRoomMessagesOutput> {
     const chatRoom = await this.findById(chatRoomId);
     const messages = await this.messageService.findByChatRoom(chatRoomId);
-
+    const title = await this.addChatTitle(chatRoom, currentUserId);
+    chatRoom.title = title;
     const chatRoomMessagesOutput: ChatRoomMessagesOutput = {
       ...chatRoom,
       messages,

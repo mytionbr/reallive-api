@@ -24,9 +24,13 @@ export class ChatRoomResolver {
     return chatRoomList;
   }
   @Query(() => ChatRoomMessagesOutput)
-  async findChatRoomWithMessages(@Args('chatRoomId') chatRoomId: string) {
+  async findChatRoomWithMessages(
+    @Args('chatRoomId') chatRoomId: string,
+    @Args('currentUserId') currentUserId: string,
+  ) {
     const chatRoom = await this.chatRoomService.findChatRoomWithMessages(
       chatRoomId,
+      currentUserId,
     );
 
     return chatRoom;
