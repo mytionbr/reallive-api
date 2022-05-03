@@ -30,7 +30,7 @@ import { ChatRoomModule } from './chat-room/chat-room.module';
         prefix: 'reallive-',
         suffix: '-table',
       },
-      //local: 'http://localhost:8000',
+     // local: 'http://localhost:8000',
     }),
     UserModule,
     AuthModule,
